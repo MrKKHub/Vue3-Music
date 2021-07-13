@@ -24,17 +24,26 @@
 
 <script>
 import { ref } from 'vue'
+import useSlider from './useSlider'
 export default {
   name: 'slider',
-  setup () {
+  props: {
+    list: {
+      type: Array,
+      default: () => []
+    }
+  },
+  setup (props) {
     const rootRef = ref(null)
+    const { currentPageIndex } = useSlider(rootRef)
     return {
-      rootRef
+      rootRef,
+      currentPageIndex,
+      sliders: props.list
     }
   }
 }
 </script>
-
 
 <style lang="scss" scoped>
   .slider {

@@ -1,24 +1,6 @@
-# vue3-music
+项目记录:
 
-## Project setup
-```
-npm install
-```
+1. recommend页面中---> loading组件 动态添加g-relative然后在去除该class 有无法滑动页面的问题
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+time: 2021/7/13
+推荐, 歌手模块页面完成

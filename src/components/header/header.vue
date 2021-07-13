@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <span class="icon"></span>
-    <h1 class="text">Vue Music</h1>
+    <h1 class="text">Cat Musci</h1>
   </div>
 </template>
 
