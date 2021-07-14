@@ -3,6 +3,7 @@
     :probeType="3"
     class="index-list"
     @scroll="groupScroll"
+    ref="scrollRef"
   >
     <ul ref="groupRef">
       <li
@@ -15,6 +16,7 @@
           <li
             v-for="item in group.list"
             :key="item.id"
+            @click="onItemClick(item)"
             class="item"
           >
             <img class="avatar" v-lazy="item.pic">
@@ -30,12 +32,30 @@
     >
       <div class="fixed-title">{{fixedTitle}}</div>
     </div>
+    <div
+      class="shortcut"
+      @touchstart.stop.prevent="onShortcutTouchStart"
+      @touchmove.stop.prevent="onShortcutTouchMove"
+      @touchend.stop.prevent
+    >
+      <ul>
+        <li
+          v-for="(item, index) in shortcutList"
+          :key="item"
+          class="item"
+          :data-index="index"
+          :class="{'current':currentIndex===index}">
+          {{item}}
+        </li>
+      </ul>
+    </div>
   </scroll>
 </template>
 
 <script>
   import Scroll from '@/components/base/scroll/scroll'
   import useFixed from './useFixed'
+  import useShortCut from './useShortCut'
 
   export default {
     name: 'index-list',
@@ -48,13 +68,24 @@
         }
       }
     },
-    setup (props) {
-      const { groupRef, groupScroll, fixedTitle, fixedStyle } = useFixed(props)
+    emit: ['select'],
+    setup (props, context) {
+      const { groupRef, groupScroll, fixedTitle, fixedStyle, currentIndex } = useFixed(props)
+      const { shortcutList, onShortcutTouchStart, onShortcutTouchMove, scrollRef } = useShortCut(props, groupRef)
+      function onItemClick (item) {
+        context.emit('select', item)
+      }
       return {
         fixedTitle,
         groupRef,
         groupScroll,
-        fixedStyle
+        fixedStyle,
+        shortcutList,
+        currentIndex,
+        onShortcutTouchStart,
+        onShortcutTouchMove,
+        scrollRef,
+        onItemClick
       }
     }
   }

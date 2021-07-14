@@ -22,9 +22,10 @@ export default {
   emit: ['scroll'],
   setup (props, context) {
     const rootRef = ref(null)
-    useScroll(rootRef, props, context)
+    const scroll = useScroll(rootRef, props, context)
     return {
-      rootRef
+      rootRef,
+      scroll
       // currentPosition
     }
   }

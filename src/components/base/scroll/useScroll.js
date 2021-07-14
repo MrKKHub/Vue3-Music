@@ -22,4 +22,7 @@ export default function useScroll (wrapperRef, options, context) {
   onUnmounted(() => {
     scroll.value.destroy()
   })
+  return {
+    scroll
+  }
 }

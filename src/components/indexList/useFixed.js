@@ -59,6 +59,7 @@ export default function useFixed (props) {
     groupRef,
     groupScroll,
     fixedTitle,
-    fixedStyle
+    fixedStyle,
+    currentIndex
   }
 }
