@@ -1,6 +1,6 @@
 <template>
   <div class="singer-detail">
-    <music-list :songs="songs" :title="title" :pic="pic" :loading="loading"></music-list>
+    <music-list :songs="songs" :title="title" :pic="pic" :loading="loading" ></music-list>
   </div>
 </template>
 
@@ -34,7 +34,7 @@
           result = singer
         } else {
           const cached = storage.session.get(SINGER_KEY)
-          if (cached && (cached.mid || cached.id + '') === this.$route.query.id) {
+          if (cached && (cached.mid || cached.id + '') === this.$route.params.id) {
             result = cached
           }
         }
@@ -53,7 +53,12 @@
       }
     },
     async created () {
-      const result = await getSingerDetail(this.singer)
+      if (!this.computedSinger) {
+        const path = this.$route.matched[0].path // 拿到一级路由的path
+        console.log(this.$route.matched)
+        this.$router.push({ path })
+      }
+      const result = await getSingerDetail(this.computedSinger)
       this.songs = await processSongs(result.songs)
     }
   }
