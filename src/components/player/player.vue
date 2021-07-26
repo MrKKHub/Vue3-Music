@@ -25,6 +25,17 @@
           </div>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{formatTime(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar
+                :progress="progress"
+                @progressChanging="onProgressChanging"
+                @progressChanged="onProgressChanged"
+              ></progress-bar>
+            </div>
+            <span class="time time-r">{{formatTime(currentSong.duration)}}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i :class="modeIcon" @click="changeMode"></i>
@@ -48,6 +59,8 @@
         @pause="pause"
         @canplay="ready"
         @error="error"
+        @timeupdate="upDateTime"
+        @ended="onEnded"
       ></audio>
   </div>
 </template>
@@ -60,26 +73,29 @@
   // import useMode from './use-mode'
   // import useFavorite from './use-favorite'
   import useCd from './useCd'
+  import ProgressBar from './progressBar'
+  // import useCd from './use-cd'
   // import useLyric from './use-lyric'
   // import useMiddleInteractive from './use-middle-interactive'
   // import useAnimation from './use-animation'
   // import usePlayHistory from './use-play-history'
-  // import ProgressBar from './progress-bar'
   // import Scroll from '@/components/base/scroll/scroll'
   // import MiniPlayer from './mini-player'
-  // import { formatTime } from '@/assets/js/util'
-  // import { PLAY_MODE } from '@/assets/js/constant'
+  import { formatTime } from '@/assets/js/utils'
+  import { PLAY_MODE } from '@/assets/js/constant'
 
   export default {
     name: 'player',
     components: {
       // MiniPlayer,
-      // ProgressBar,
+      ProgressBar
       // Scroll
     },
     setup () {
       const audioRef = ref(null)
       const songReady = ref(false)
+      const currentTime = ref(0)
+      let progressChanging = false
 
       const store = useStore()
       const fullScreen = computed(() => store.state.fullScreen)
@@ -87,6 +103,11 @@
       const playing = computed(() => store.state.playing)
       const currentIndex = computed(() => store.state.currentIndex)
       const playList = computed(() => store.state.playList)
+      const playMode = computed(() => store.state.playMode)
+      const progress = computed(() => {
+        return currentTime.value / currentSong.value.duration
+      })
+
       const { modeIcon, changeMode } = useMode()
       const { getFavoriteIcon, toggelFavorite } = useFavorite()
       const { cdCls, cdRef, cdImageRef } = useCd()
@@ -101,6 +122,7 @@
         if (!newV.id || !newV.url) {
           return
         }
+        currentTime.value = 0
         songReady.value = false
         const audioVal = audioRef.value
         audioVal.src = newV.url
@@ -163,6 +185,7 @@
         const audioVal = audioRef.value
         audioVal.currentTime = 0 // 从头开始播放
         audioVal.play()
+        store.commit('setPlayingState', true)
       }
 
       function ready () {
@@ -174,6 +197,32 @@
       function error () {
         // 播放出现出错时会触发
         songReady.value = true
+      }
+      function upDateTime (e) {
+        // 播放进度回调
+        if (!progressChanging) {
+          currentTime.value = e.target.currentTime
+        }
+      }
+      function onEnded () {
+        // 歌曲播放完的回调
+        currentTime.value = 0
+        if (playMode.value === PLAY_MODE.loop) {
+          loop()
+        } else {
+          next()
+        }
+      }
+      function onProgressChanging (progress) {
+        progressChanging = true
+        currentTime.value = currentSong.value.duration * progress
+      }
+      function onProgressChanged (progress) {
+        progressChanging = false
+        audioRef.value.currentTime = currentTime.value = currentSong.value.duration * progress
+        if (!playing.value) {
+          store.commit('setPlayingState', true)
+        }
       }
 
       return {
@@ -193,6 +242,13 @@
         changeMode,
         getFavoriteIcon,
         toggelFavorite,
+        currentTime,
+        progress,
+        upDateTime,
+        formatTime,
+        onProgressChanging,
+        onProgressChanged,
+        onEnded,
         // cd
         cdCls,
         cdRef,
