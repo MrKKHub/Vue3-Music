@@ -15,6 +15,15 @@
           <h1 class="title">{{currentSong.name}}</h1>
           <h2 class="subtitle">{{currentSong.singer}}</h2>
         </div>
+        <div class="middle">
+          <div class="middle-l" :style="middleLStyle">
+            <div ref="cdWrapperRef" class="cd-wrapper">
+              <div ref="cdRef" class="cd">
+                <img ref="cdImageRef" class="image" :class="cdCls" :src="currentSong.pic">
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="bottom">
           <div class="operators">
             <div class="icon i-left">
@@ -50,7 +59,7 @@
   import useFavorite from './useFavorite'
   // import useMode from './use-mode'
   // import useFavorite from './use-favorite'
-  // import useCd from './use-cd'
+  import useCd from './useCd'
   // import useLyric from './use-lyric'
   // import useMiddleInteractive from './use-middle-interactive'
   // import useAnimation from './use-animation'
@@ -80,6 +89,7 @@
       const playList = computed(() => store.state.playList)
       const { modeIcon, changeMode } = useMode()
       const { getFavoriteIcon, toggelFavorite } = useFavorite()
+      const { cdCls, cdRef, cdImageRef } = useCd()
       const playIcon = computed(() => {
         return playing.value ? 'icon-pause' : 'icon-play'
       })
@@ -182,7 +192,11 @@
         modeIcon,
         changeMode,
         getFavoriteIcon,
-        toggelFavorite
+        toggelFavorite,
+        // cd
+        cdCls,
+        cdRef,
+        cdImageRef
       }
     }
   }
