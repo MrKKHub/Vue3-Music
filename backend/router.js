@@ -4,7 +4,7 @@
  */
 const axios = require('axios')
 const pinyin = require('pinyin')
-// const Base64 = require('js-base64').Base64
+const Base64 = require('js-base64').Base64
 // 获取签名方法
 const getSecuritySign = require('./sign')
 

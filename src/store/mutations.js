@@ -23,8 +23,18 @@ const mutations = {
   setFullScreen (state, fullScreen) {
     state.fullScreen = fullScreen
   },
+  // 设置收藏歌曲
   setFavoriteList (state, list) {
     state.favoriteList = list
+  },
+  // 保存歌词
+  addSongLyric (state, { song, lyric }) {
+    state.sequenceList.map(item => {
+      if (item.mid === song.mid) {
+        item.lyric = lyric
+      }
+      return item
+    })
   }
 }
 

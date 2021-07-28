@@ -14,10 +14,8 @@ export default function useFavorite () {
   function toggelFavorite (song) {
     let list = favoriteList.value
     if (isFavorite(song)) {
-      // list.splice(index, 1)
       list = remove(FAVORITE_KEY, compare)
     } else {
-      // list.push(song)
       list = save(song, FAVORITE_KEY, compare, maxLen)
     }
     store.commit('setFavoriteList', list)

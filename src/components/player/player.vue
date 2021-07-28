@@ -15,16 +15,43 @@
           <h1 class="title">{{currentSong.name}}</h1>
           <h2 class="subtitle">{{currentSong.singer}}</h2>
         </div>
-        <div class="middle">
+        <div class="middle"
+          @touchstart.prevent="onMiddleTouchStart"
+          @touchmove.prevent="onMiddleTouchMove"
+          @touchend.prevent="onMiddleTouchEnd">
           <div class="middle-l" :style="middleLStyle">
             <div ref="cdWrapperRef" class="cd-wrapper">
               <div ref="cdRef" class="cd">
                 <img ref="cdImageRef" class="image" :class="cdCls" :src="currentSong.pic">
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{playingLyric}}</div>
+            </div>
           </div>
+          <scroll class="middle-r" ref="lyricScrollRef" :style="middleRStyle">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric" ref="lyricListRef">
+                <p
+                  class="text"
+                  :class="{'current': currentLineNum ===index}"
+                  v-for="(line,index) in currentLyric.lines"
+                  :key="line.num"
+                >
+                  {{line.txt}}
+                </p>
+              </div>
+              <div class="pure-music" v-show="pureMusicLyric">
+                <p>{{pureMusicLyric}}</p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
+          <div class="dot-wrapper">
+            <span class="dot" :class="{'active':currentShow==='cd'}"></span>
+            <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
+          </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{formatTime(currentTime)}}</span>
             <div class="progress-bar-wrapper">
@@ -70,16 +97,13 @@
   import { computed, watch, ref } from 'vue'
   import useMode from './useMode'
   import useFavorite from './useFavorite'
-  // import useMode from './use-mode'
-  // import useFavorite from './use-favorite'
   import useCd from './useCd'
   import ProgressBar from './progressBar'
-  // import useCd from './use-cd'
-  // import useLyric from './use-lyric'
-  // import useMiddleInteractive from './use-middle-interactive'
+  import useLyric from './useLyric'
+  import useMiddleInteractive from './useMiddleInteractive'
   // import useAnimation from './use-animation'
   // import usePlayHistory from './use-play-history'
-  // import Scroll from '@/components/base/scroll/scroll'
+  import Scroll from '@/components/base/scroll/scroll'
   // import MiniPlayer from './mini-player'
   import { formatTime } from '@/assets/js/utils'
   import { PLAY_MODE } from '@/assets/js/constant'
@@ -88,8 +112,8 @@
     name: 'player',
     components: {
       // MiniPlayer,
-      ProgressBar
-      // Scroll
+      ProgressBar,
+      Scroll
     },
     setup () {
       const audioRef = ref(null)
@@ -111,6 +135,9 @@
       const { modeIcon, changeMode } = useMode()
       const { getFavoriteIcon, toggelFavorite } = useFavorite()
       const { cdCls, cdRef, cdImageRef } = useCd()
+      const { currentLyric, currentLineNum, playLyric, lyricScrollRef, lyricListRef, stopLyric, pureMusicLyric, playingLyric } = useLyric({ songReady, currentTime })
+      const { currentShow, middleLStyle, middleRStyle, onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd } = useMiddleInteractive()
+
       const playIcon = computed(() => {
         return playing.value ? 'icon-pause' : 'icon-play'
       })
@@ -132,7 +159,14 @@
       watch(playing, (newV) => {
         if (!songReady.value) return
         const audioVal = audioRef.value
-        newV ? audioVal.play() : audioVal.pause()
+        if (newV) {
+          audioVal.play()
+          playLyric()
+        } else {
+          audioVal.pause()
+          stopLyric()
+        }
+        // newV ? audioVal.play() : audioVal.pause()
       })
       function goBack () {
         store.commit('setFullScreen', false)
@@ -192,6 +226,7 @@
         // 音频资源有加载出一段缓存后会触发
         if (songReady.value) return
         songReady.value = true
+        playLyric()
       }
 
       function error () {
@@ -216,6 +251,8 @@
       function onProgressChanging (progress) {
         progressChanging = true
         currentTime.value = currentSong.value.duration * progress
+        playLyric()
+        stopLyric()
       }
       function onProgressChanged (progress) {
         progressChanging = false
@@ -223,8 +260,8 @@
         if (!playing.value) {
           store.commit('setPlayingState', true)
         }
+        playLyric()
       }
-
       return {
         fullScreen,
         currentSong,
@@ -252,7 +289,20 @@
         // cd
         cdCls,
         cdRef,
-        cdImageRef
+        cdImageRef,
+        // lyric
+        currentLyric,
+        currentLineNum,
+        lyricScrollRef,
+        lyricListRef,
+        pureMusicLyric,
+        playingLyric,
+        currentShow,
+        middleLStyle,
+        middleRStyle,
+        onMiddleTouchStart,
+        onMiddleTouchMove,
+        onMiddleTouchEnd
       }
     }
   }
