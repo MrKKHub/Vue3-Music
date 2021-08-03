@@ -46,8 +46,9 @@
 
 <script>
   import SongList from '@/components/base/songList/songList'
-  import Scroll from '@/components/base/scroll/scroll'
-  import { mapActions } from 'vuex'
+  // import Scroll from '@/components/base/scroll/scroll'
+  import Scroll from '@/components/wrap-scroll'
+  import { mapActions, mapState } from 'vuex'
 
   const RESERVED_HEIGHT = 40
   export default {
@@ -105,8 +106,10 @@
         }
       },
       scrollStyle () {
+        const bottom = this.playList.length ? '60px' : '0'
         return {
-          top: `${this.bgImageHeight}px`
+          top: `${this.bgImageHeight}px`,
+          bottom
         }
       },
       filterStyle () {
@@ -132,7 +135,8 @@
       },
       noResult () {
         return !this.loading && !this.songs.length
-      }
+      },
+      ...mapState(['playList'])
     },
     mounted () {
       this.bgImageHeight = this.$refs.bgImage.clientHeight
