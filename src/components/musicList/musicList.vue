@@ -38,6 +38,7 @@
         <song-list
           :songs="songs"
           @select="selectItem"
+          :rank="rank"
         ></song-list>
       </div>
     </scroll>
@@ -69,7 +70,8 @@
       loading: {
         type: Boolean,
         default: false
-      }
+      },
+      rank: Boolean
     },
     data () {
       return {

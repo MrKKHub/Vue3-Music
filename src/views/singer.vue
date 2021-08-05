@@ -4,7 +4,7 @@
   </div>
   <router-view v-slot="{ Component }">
     <transition appear name="slide">
-      <component :is="Component" :singer="selectedSinger"></component>
+      <component :is="Component" :data="selectedSinger"></component>
     </transition>
   </router-view>
 </template>

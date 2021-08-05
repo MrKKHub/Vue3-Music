@@ -9,7 +9,7 @@
 import Header from '@/components/header/header'
 import Tab from '@/components/tab/tab'
 import Player from '@/components/player/player'
- import { mapState } from 'vuex'
+import { mapState } from 'vuex'
 export default {
   name: 'app',
   components: {

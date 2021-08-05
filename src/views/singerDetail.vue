@@ -5,63 +5,13 @@
 </template>
 
 <script>
-  import MusicList from '@/components/musicList/musicList'
+  // import MusicList from '@/components/musicList/musicList'
+  import createDetailComponent from '@/assets/js/createDetailComponent'
   import { getSingerDetail } from '@/service/singer'
-  import { processSongs } from '@/service/song'
-  import storage from 'good-storage'
+  // import { processSongs } from '@/service/song'
+  // import storage from 'good-storage'
   import { SINGER_KEY } from '@/assets/js/constant'
-  export default {
-    name: 'singerDetail',
-    components: {
-      MusicList
-    },
-    props: {
-      singer: {
-        type: Object,
-        default: () => {}
-      }
-    },
-    data () {
-      return {
-        songs: []
-      }
-    },
-    computed: {
-      computedSinger () {
-        let result = null
-        const singer = this.singer
-        if (singer) {
-          result = singer
-        } else {
-          const cached = storage.session.get(SINGER_KEY)
-          if (cached && (cached.mid || cached.id + '') === this.$route.params.id) {
-            result = cached
-          }
-        }
-        return result
-      },
-      title () {
-        const singer = this.computedSinger
-        return singer && singer.name
-      },
-      pic () {
-        const singer = this.computedSinger
-        return singer && singer.pic
-      },
-      loading () {
-        return !this.songs.length
-      }
-    },
-    async created () {
-      if (!this.computedSinger) {
-        const path = this.$route.matched[0].path // 拿到一级路由的path
-        console.log(this.$route.matched)
-        this.$router.push({ path })
-      }
-      const result = await getSingerDetail(this.computedSinger)
-      this.songs = await processSongs(result.songs)
-    }
-  }
+  export default createDetailComponent('singerDetail', SINGER_KEY, getSingerDetail)
 </script>
 
 <style lang="scss" scoped>
